@@ -1,12 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <title>Hold Shift to Check Multiple Checkboxes</title>
 </head>
+
 <body>
   <style>
-
     html {
       font-family: sans-serif;
       background: #ffc600;
@@ -17,7 +18,7 @@
       margin: 50px auto;
       background: white;
       border-radius: 5px;
-      box-shadow: 10px 10px 0 rgba(0,0,0,0.1);
+      box-shadow: 10px 10px 0 rgba(0, 0, 0, 0.1);
     }
 
     .item {
@@ -30,7 +31,7 @@
       border-bottom: 0;
     }
 
-    input:checked + p {
+    input:checked+p {
       background: #F9F9F9;
       text-decoration: line-through;
     }
@@ -44,13 +45,13 @@
       padding: 20px;
       transition: background 0.2s;
       flex: 1;
-      font-family:'helvetica neue';
+      font-family: 'helvetica neue';
       font-size: 20px;
       font-weight: 200;
       border-left: 1px solid #D1E2FF;
     }
   </style>
-   <!--
+  <!--
    The following is a common layout you would see in an email client.
 
    When a user clicks a checkbox, holds Shift, and then clicks another checkbox a few rows down, all the checkboxes inbetween those two checkboxes should be checked.
@@ -95,7 +96,58 @@
     </div>
   </div>
 
-<script>
-</script>
+  <script>
+    let isShift = false
+    document.addEventListener('keydown', shiftHeld)
+    document.addEventListener('keyup', e => isShift = false)
+
+    function shiftHeld(e) {
+      if (e.key === 'Shift') {
+        console.log('shift is keyed!');
+        isShift = true
+      }
+    }
+
+    // const checkboxes = document.querySelectorAll('input')
+    // checkboxes.forEach(checkbox => checkbox.addEventListener('click', e => console.dir(e.target)))
+
+    const inbox = document.querySelector('.inbox')
+    inbox.addEventListener('click', checkBoxes)
+    let firstItem, secondItem
+    let indicies = []
+
+    let items = inbox.childNodes
+    items.forEach(item => {
+      item.addEventListener('click', () => item.querySelector('input').checked = !item.querySelector('input').checked)
+    })
+
+    function checkBoxes(e) {
+      if (isShift) {
+        // sets the second item only if the shift key is held down
+        secondItem = e.target.parentNode
+        console.log('setting the second item', secondItem);
+        let items = inbox.querySelectorAll('.item')
+        let flag = false
+
+        for (let i = 0; i < items.length; i++) {
+          if (items[i] === firstItem || items[i] === secondItem) {
+            indicies.push(i)
+            flag = true
+            if (indicies.length === 2) {
+              flag = false
+            }
+          }
+          if (flag) {
+            items[i].querySelector('input').checked = true
+          }
+        }
+      } else {
+        // sets the first item whenever there is a click on the item
+        firstItem = e.target.parentNode;
+        console.log('setting the first item', firstItem);
+      }
+    }
+  </script>
 </body>
+
 </html>
