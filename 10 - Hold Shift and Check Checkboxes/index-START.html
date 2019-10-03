@@ -114,30 +114,20 @@
     const inbox = document.querySelector('.inbox')
     inbox.addEventListener('click', checkBoxes)
     let firstItem, secondItem
-    let indicies = []
-
-    let items = inbox.childNodes
-    items.forEach(item => {
-      item.addEventListener('click', () => item.querySelector('input').checked = !item.querySelector('input').checked)
-    })
 
     function checkBoxes(e) {
-      if (isShift) {
+      if (isShift && e.target.checked) {
         // sets the second item only if the shift key is held down
         secondItem = e.target.parentNode
         console.log('setting the second item', secondItem);
         let items = inbox.querySelectorAll('.item')
-        let flag = false
+        let inBetween = false
 
         for (let i = 0; i < items.length; i++) {
           if (items[i] === firstItem || items[i] === secondItem) {
-            indicies.push(i)
-            flag = true
-            if (indicies.length === 2) {
-              flag = false
-            }
+            inBetween = !inBetween
           }
-          if (flag) {
+          if (inBetween) {
             items[i].querySelector('input').checked = true
           }
         }
