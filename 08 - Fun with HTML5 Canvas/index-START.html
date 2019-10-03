@@ -1,19 +1,88 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <title>HTML5 Canvas</title>
 </head>
-<body>
-<canvas id="draw" width="800" height="800"></canvas>
-<script>
-</script>
 
-<style>
-  html, body {
-    margin: 0;
-  }
-</style>
+<body>
+  <canvas id="draw" width="800" height="800"></canvas>
+  <script>
+
+    const canvas = document.querySelector('#draw')
+    const ctx = canvas.getContext('2d')
+    canvas.width = window.innerWidth
+    canvas.height = window.innerHeight
+
+    ctx.strokeStyle = '#BADA55'
+    ctx.lineCap = 'round'
+    ctx.globalCompositeOperation = 'color'
+    // ctx.globalCompositeOperation = 'xor'
+    // ctx.globalCompositeOperation = 'source-out'
+    // ctx.globalCompositeOperation = 'multiply'
+
+    let isDrawing = false;
+    let lastX = 0
+    let lastY = 0
+
+    let hue = 0
+    let width = 5
+    let grow = true
+
+    function draw(e) {
+      if (!isDrawing) return; // stops the function from running if they are not drawing (not mousedown)
+      // console.log('drawing a line!', e);
+      ctx.strokeStyle = `hsl(${hue}, 100%, 50%)`
+      ctx.lineWidth = width
+      ctx.beginPath()
+      ctx.moveTo(lastX, lastY)
+      ctx.lineTo(e.offsetX, e.offsetY)
+      ctx.stroke()
+
+      hue += 1 // with hsl, any values over 360, it just restart at red
+      grow ? width++ : width--
+      // if (grow) {
+      //   width += Math.abs(e.offsetX - lastX)
+      // } else {
+      //   width -= Math.abs(e.offsetY - lastY)
+      // }
+      (width >= 200 || width <= 5) ? grow = !grow : null
+      // this array destructuring does not work for some reason...?
+      // [lastX, lastY] = [e.offsetX, e.offsetY];
+      lastX = e.offsetX
+      lastY = e.offsetY
+    }
+
+    function startDraw(e) {
+      isDrawing = true
+      lastX = e.offsetX
+      lastY = e.offsetY
+      // this array destructuring does not work for some reason...?
+      // [lastX, lastY] = [e.offsetX, e.offsetY];
+      // console.log('start draw ... set is drawing to true', e.offsetX, e.offsetY);
+      // console.log(lastX, lastY);
+    }
+
+    function stopDraw(e) {
+      isDrawing = false
+      [stopX, stopY] = [e.offsetX, e.offsetY]
+    }
+
+    canvas.addEventListener('mousemove', draw)
+    canvas.addEventListener('mousedown', draw)
+    canvas.addEventListener('mousedown', startDraw)
+    canvas.addEventListener('mouseup', () => isDrawing = false)
+    canvas.addEventListener('mouseout', () => isDrawing = false) 
+  </script>
+
+  <style>
+    html,
+    body {
+      margin: 0;
+    }
+  </style>
 
 </body>
+
 </html>
